@@ -19,7 +19,8 @@ namespace MDR {
             }
             else{
                 std::vector<size_t> strs(strides.begin(), strides.end());
-                decomposer.decompose(data, dims, target_level, false, strs);
+                // decomposer.decompose(data, dims, target_level, false, strs);
+                decomposer.decompose(data, dims, target_level, false);
             }
         }
         void recompose(T * data, const std::vector<uint32_t>& dimensions, uint32_t target_level, std::vector<uint32_t> strides=std::vector<uint32_t>()) const {
@@ -30,7 +31,8 @@ namespace MDR {
             }
             else{
                 std::vector<size_t> strs(strides.begin(), strides.end());
-                recomposer.recompose(data, dims, target_level, false, strs);
+                // recomposer.recompose(data, dims, target_level, false, strs);
+                recomposer.recompose(data, dims, target_level, false);
             }
         }
         void print() const {
@@ -50,7 +52,8 @@ namespace MDR {
             }
             else{
                 std::vector<size_t> strs(strides.begin(), strides.end());
-                decomposer.decompose(data, dims, target_level, true, strs);
+                // decomposer.decompose(data, dims, target_level, true, strs);
+                decomposer.decompose(data, dims, target_level, true);
             }
         }
         void recompose(T * data, const std::vector<uint32_t>& dimensions, uint32_t target_level, std::vector<uint32_t> strides=std::vector<uint32_t>()) const {
@@ -61,7 +64,8 @@ namespace MDR {
             }
             else{
                 std::vector<size_t> strs(strides.begin(), strides.end());
-                recomposer.recompose(data, dims, target_level, true, strs);
+                // recomposer.recompose(data, dims, target_level, true, strs);
+                recomposer.recompose(data, dims, target_level, true);
             }
         }
         void print() const {
