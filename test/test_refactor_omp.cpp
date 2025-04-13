@@ -11,7 +11,7 @@
 
 #include <omp.h>
 
-#define NUM_CORES 64
+#define NUM_CORES 32
 #define NUM_BLOCKS 32
 
 using namespace std;
