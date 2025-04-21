@@ -36,9 +36,9 @@ public:
     uint8_t target_level = level_error_bounds.size() - 1;
     std::vector<std::vector<double>> &level_errors = level_squared_errors;
     if (std::is_base_of<MaxErrorEstimator<T>, ErrorEstimator>::value) {
-      std::cout << "ErrorEstimator is base of MaxErrorEstimator, computing "
-                   "absolute error"
-                << std::endl;
+      // std::cout << "ErrorEstimator is base of MaxErrorEstimator, computing "
+      //              "absolute error"
+      //           << std::endl;
       MaxErrorCollector<T> collector = MaxErrorCollector<T>();
       for (int i = 0; i <= target_level; i++) {
         auto collected_error = collector.collect_level_error(
@@ -48,9 +48,9 @@ public:
       level_errors = level_abs_errors;
     } else if (std::is_base_of<SquaredErrorEstimator<T>,
                                ErrorEstimator>::value) {
-      std::cout << "ErrorEstimator is base of SquaredErrorEstimator, using "
-                   "level squared error directly"
-                << std::endl;
+      // std::cout << "ErrorEstimator is base of SquaredErrorEstimator, using "
+      //              "level squared error directly"
+      //           << std::endl;
     } else {
       std::cerr << "Customized error estimator not supported yet" << std::endl;
       exit(-1);
@@ -210,10 +210,10 @@ private:
     auto num_levels = level_num.size();
     auto level_dims = compute_level_dims(dimensions, num_levels - 1);
     auto reconstruct_dimensions = level_dims[target_level];
-    std::cout << "target_level = " << +target_level
-              << ", dims = " << reconstruct_dimensions[0] << " "
-              << reconstruct_dimensions[1] << " " << reconstruct_dimensions[2]
-              << std::endl;
+    // std::cout << "target_level = " << +target_level
+    //           << ", dims = " << reconstruct_dimensions[0] << " "
+    //           << reconstruct_dimensions[1] << " " << reconstruct_dimensions[2]
+    //           << std::endl;
     // update with stride
     std::vector<T> cur_data(data);
     memset(data.data(), 0, data.size() * sizeof(T));
@@ -247,7 +247,7 @@ private:
       if (current_level)
         decomposer.recompose(data.data(), current_dimensions, current_level,
                              this->strides);
-      std::cout << "update data\n";
+      // std::cout << "update data\n";
       // update data with strides
       if (dimensions.size() == 1) {
         for (int i = 0; i < current_dimensions[0]; i++) {
@@ -271,7 +271,7 @@ private:
         }
       }
     }
-    std::cout << "decompose to target_level\n";
+    // std::cout << "decompose to target_level\n";
     // decompose data to target level
     for (int i = current_level + 1; i <= target_level; i++) {
       compressor.decompress_level(
