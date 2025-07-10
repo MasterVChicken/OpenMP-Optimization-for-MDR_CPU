@@ -12,12 +12,12 @@
 
 #include <omp.h>
 
-#define NUM_CORES 32
-#define NUM_BLOCKS 32
+#define NUM_CORES 16
+#define NUM_BLOCKS 16
 
 using namespace std;
 
-// Parallel refactor on blocks
+
 template <class T, class Refactor>
 void evaluate_refactor_parallel(const vector<T> &data,
                                 const vector<uint32_t> &dims, int target_level,
@@ -54,7 +54,6 @@ void evaluate_refactor_parallel(const vector<T> &data,
       continue;
     }
 
-    // debug for too small dim
     if (local_dims[0] < 2 || local_dims[1] < 2 || local_dims[2] < 2) {
       std::cerr << "Chunk " << i << " too small! dims = [" << local_dims[0]
                 << ", " << local_dims[1] << ", " << local_dims[2]
@@ -66,11 +65,22 @@ void evaluate_refactor_parallel(const vector<T> &data,
     refactor.refactor(&data[offset], local_dims, target_level, num_bitplanes);
   }
   clock_gettime(CLOCK_REALTIME, &end);
-  std::cout << "Refactor (parallel) time: "
-            << (double)(end.tv_sec - start.tv_sec) +
-                   (double)(end.tv_nsec - start.tv_nsec) / 1e9
-            << "s" << std::endl;
+  double elapsed =
+      (double)(end.tv_sec - start.tv_sec) +
+      (double)(end.tv_nsec - start.tv_nsec) / 1e9;
+
+  std::cout << "Refactor (parallel) time: " << elapsed << "s" << std::endl;
+
+  std::ofstream outfile("refactor_time.txt", std::ios::app);
+  if (outfile.is_open()) {
+    outfile << "==== Refactor time ====\n";
+    outfile << "Parallel refactor time: " << elapsed << "s\n\n";
+    outfile.close();
+  } else {
+    std::cerr << "[ERROR] Could not open refactor_time.txt for writing.\n";
+  }
 }
+
 
 template <class T, class Decomposer, class Interleaver, class Encoder,
           class Compressor, class ErrorCollector, class Writer>

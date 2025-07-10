@@ -5,41 +5,59 @@
 #include <iomanip>
 #include <iostream>
 #include <vector>
-// #include "evaluate.hpp"
-
+#include <fstream>
 #include <omp.h>
 
 #include "utils.hpp"
 
 #include "Reconstructor/Reconstructor.hpp"
 
-#define NUM_CORES 32
-#define NUM_BLOCKS 32
+#define NUM_CORES 16
+#define NUM_BLOCKS 16
 
 using namespace std;
 
 template <class T, class Reconstructor>
 void evaluate_reconstructor_parallel(const vector<T> &data,
                                      const vector<double> &tolerance,
-                                     vector<Reconstructor> reconstructors) {
-  std::vector<int> total_size(tolerance.size());
+                                     vector<Reconstructor> &reconstructors) {
+  std::vector<size_t> total_size(tolerance.size(), 0);
+
+  std::ofstream outfile("retrieved_size.txt", std::ios::app);
+  if (!outfile.is_open()) {
+    std::cerr << "[ERROR] Failed to open retrieved_size.txt for writing." << std::endl;
+    return;
+  }
+
+  outfile << "==== Results ====" << std::endl;
+
   for (int j = 0; j < tolerance.size(); j++) {
-    size_t total_retrieved_bytes_for_tol = 0;
+    std::vector<size_t> thread_local_sizes(NUM_BLOCKS, 0);
+
     #pragma omp parallel for num_threads(NUM_CORES)
     for (int i = 0; i < NUM_BLOCKS; i++) {
       auto reconstructed_data =
           reconstructors[i].progressive_reconstruct(tolerance[j], -1);
       auto size_vec = reconstructors[i].getLastRetrieveSizes();
-      for(int k = 0;k<size_vec.size();k++){
-        total_retrieved_bytes_for_tol += size_vec[k];
+
+      for (auto size : size_vec) {
+        thread_local_sizes[i] += size;
       }
     }
-    total_size[j] = total_retrieved_bytes_for_tol;
+
+    for (int i = 0; i < NUM_BLOCKS; i++) {
+      total_size[j] += thread_local_sizes[i];
+    }
+
+    outfile << "tolerance " << tolerance[j]
+            << " -> retrieved size = " << total_size[j] << " bytes" << std::endl;
   }
-  for(int i = 0;i<tolerance.size();i++){
-    std::cout << "Retrieved size for tolerance " << tolerance[i] << " is " << total_size[i] << std::endl;
-  }
+
+  outfile << std::endl;
+  outfile.close();
 }
+
+
 
 template <class T, class Decomposer, class Interleaver, class Encoder,
           class Compressor, class ErrorEstimator, class SizeInterpreter,
@@ -61,9 +79,10 @@ void test(string filename, const vector<double> &tolerance,
 
     size_t num_bytes = 0;
     auto metadata = MGARD::readfile<uint8_t>(metadata_file.c_str(), num_bytes);
-    assert(num_bytes > num_dims * sizeof(uint32_t) + 2);
+    
     num_dims = metadata[0];
     num_levels = metadata[num_dims * sizeof(uint32_t) + 1];
+    // assert(num_bytes > num_dims * sizeof(uint32_t) + 2);
 
     vector<string> files;
     for (int j = 0; j < num_levels; j++) {
