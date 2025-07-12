@@ -21,6 +21,7 @@ template <class T, class Reconstructor>
 void evaluate_reconstructor_parallel(const vector<T> &data,
                                      const vector<double> &tolerance,
                                      vector<Reconstructor> &reconstructors) {
+  struct timespec start, end;
   std::vector<size_t> total_size(tolerance.size(), 0);
 
   std::ofstream outfile("retrieved_size.txt", std::ios::app);
@@ -34,6 +35,7 @@ void evaluate_reconstructor_parallel(const vector<T> &data,
   for (int j = 0; j < tolerance.size(); j++) {
     std::vector<size_t> thread_local_sizes(NUM_BLOCKS, 0);
 
+    clock_gettime(CLOCK_REALTIME, &start);
     #pragma omp parallel for num_threads(NUM_CORES)
     for (int i = 0; i < NUM_BLOCKS; i++) {
       auto reconstructed_data =
@@ -44,13 +46,17 @@ void evaluate_reconstructor_parallel(const vector<T> &data,
         thread_local_sizes[i] += size;
       }
     }
+    clock_gettime(CLOCK_REALTIME, &end);
+    double elapsed =
+      (double)(end.tv_sec - start.tv_sec) +
+      (double)(end.tv_nsec - start.tv_nsec) / 1e9;
 
     for (int i = 0; i < NUM_BLOCKS; i++) {
       total_size[j] += thread_local_sizes[i];
     }
 
     outfile << "tolerance " << tolerance[j]
-            << " -> retrieved size = " << total_size[j] << " bytes" << std::endl;
+            << " -> retrieved size = " << total_size[j] << " bytes -> retrieved time = " << elapsed << std::endl;
   }
 
   outfile << std::endl;
