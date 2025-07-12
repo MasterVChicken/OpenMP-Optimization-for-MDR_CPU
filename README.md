@@ -15,12 +15,20 @@ You will find results under /build : refactor_time.txt and retrieved_size.txt .
 **How to read results**
 
 *refactor_time.txt* shows the total refactor time for each dataset listed in run_script.sh with each result seperated by "==== Refactor time ====".
+
 The refactor times are printed in the order specified in the run_script. Dataset names were not included in the output; apologies for the omission.
 
+
+
+
+
+
 *retrieved_size.txt* follows the same sequence as *refactor_time.txt* with each result seperated by "==== Results ====".
+
 For each dataset, we report performance under multiple tolerance levels. Each row includes:
-the tolerance value (representing the desired reconstruction accuracy),
-the retrieved size (in bytes) (incremental),
-and the retrieval time (in seconds).
+
+- the tolerance value (representing the desired reconstruction accuracy),
+- the retrieved size (in bytes) (incremental),
+- and the retrieval time (in seconds).
 The primary focus of our analysis is on the retrieved size and retrieval time, as they reflect how many bit and time taken to reconstruct to current tolerance.
 
