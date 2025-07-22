@@ -32,3 +32,20 @@ For each dataset, we report performance under multiple tolerance levels. Each ro
 - and the retrieval time (in seconds).
 The primary focus of our analysis is on the retrieved size and retrieval time, as they reflect how many bit and time taken to reconstruct to current tolerance.
 
+
+### Note on Floating-point Precision
+**Important**: Our current implementation assumes single-precision (float) by default.
+
+If you are testing with a **double-precision** dataset, please manually modify the source files:
+
+- In `test/test_refactor_omp.cpp`, change  
+  ```cpp
+  using T = float;
+  ```
+  to
+  ```cpp
+  using T = double;
+  ```
+- In `test/test_reconstructor_omp.cpp`, do the same replacement.
+
+
