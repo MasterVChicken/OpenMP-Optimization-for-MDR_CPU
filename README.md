@@ -6,8 +6,9 @@ To test the framework, you will need to change the following path to your own pr
 ```
 set(EVA_INCLUDES "/home/leonli/OpenMP-Optimization-for-MDR_CPU/external/compression_utils/include")
 ```
-Then you can run the project by 
+Then you can build and run the project by 
 ```
+./build_script.sh 8
 ./run_script.sh
 ```
 You will find results under /build : refactor_time.txt and retrieved_size.txt .
